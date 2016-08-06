@@ -1,5 +1,6 @@
 require "optparse"
 require "jiralo/report_params"
+require "jiralo/report"
 require "pathname"
 require "fileutils"
 

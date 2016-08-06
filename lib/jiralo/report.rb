@@ -1,5 +1,7 @@
 require "jiralo/jira"
+require "jiralo/jira/issue"
 require "json"
+require "active_support/core_ext/string/filters"
 
 module Jiralo
   class Report
@@ -10,6 +12,13 @@ module Jiralo
     end
 
     def write(path)
+    end
+
+    def worklogs
+      issues
+        .lazy
+        .flat_map { |issue| issue.worklogs_for_user(params.user) }
+        .sort     { |worklog, other| worklog.started_at <=> other.started_at }
     end
 
     def issues
@@ -36,9 +45,12 @@ module Jiralo
     end
 
     def jql_query
-      "updated>=#{ params.from } and "\
-      "updated<=#{ params.to } and "\
-      "timespent>0"
+      str = <<-EOS
+        updated >= #{ params.from } and
+        updated <= #{ params.to } and
+        timespent > 0
+      EOS
+      str.squish
     end
 
     def api_version

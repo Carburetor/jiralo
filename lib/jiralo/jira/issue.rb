@@ -1,7 +1,9 @@
 require "jiralo/jira"
+require "jiralo/jira/worklog"
 require "json"
 
 class Jiralo::Jira::Issue
+  attr_accessor :id
   attr_accessor :key
   attr_accessor :summary
   attr_accessor :parent
@@ -11,13 +13,23 @@ class Jiralo::Jira::Issue
     @id      = json["id"].to_s
     @key     = json["key"].to_s
     @summary = fields["summary"].to_s
-    @parent  = Issue.new(fields["parent"]) if fields["parent"]
+    @parent  = self.class.new(fields["parent"]) if fields["parent"]
+  end
+
+  def worklogs_for_user(user_or_email)
+    worklogs.select do |worklog|
+      worklog.for_user?(user_or_email.to_s)
+    end
   end
 
   def worklogs
     json = JSON.parse(download_worklogs.to_s)
-    json["worklog"].map do |worklog|
-      Worklog.new(worklog)
+    logs = json["fields"]   || {}
+    logs = logs["worklog"]  || {}
+    logs = logs["worklogs"] || []
+
+    logs.map do |worklog|
+      ::Jiralo::Jira::Worklog.new(self, worklog)
     end
   end
 
