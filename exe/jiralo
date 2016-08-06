@@ -2,3 +2,6 @@
 
 require "bundler/setup"
 require "jiralo"
+require "jiralo/cli"
+
+Jiralo::CLI.new(ARGV).run
