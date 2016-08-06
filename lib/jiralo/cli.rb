@@ -1,4 +1,7 @@
 require "optparse"
+require "jiralo/report_params"
+require "pathname"
+require "fileutils"
 
 module Jiralo
   class CLI
@@ -14,8 +17,8 @@ module Jiralo
     end
 
     def run
-      puts options.inspect
-      puts params.inspect
+      report = Report.new(ReportParams.new(**params))
+      report.write(file_path.to_s)
     end
 
     def help
@@ -24,6 +27,10 @@ module Jiralo
     end
 
     private
+
+    def file_path
+      Pathname.new(FileUtils.pwd).join("worklog_report.csv")
+    end
 
     def parse_options(args)
       args = args.dup

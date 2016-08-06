@@ -12,7 +12,14 @@ gem install jiralo
 
 ## Usage
 
-Generic usage
+You must export the following env variables:
+
+```bash
+export JIRA_USERNAME='youruser'
+export JIRA_PASSWORD='jirapass'
+```
+
+Then you can run:
 
 ```bash
 jiralo project user from_date to_date
