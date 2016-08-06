@@ -17,13 +17,17 @@ You must export the following env variables:
 ```bash
 export JIRA_USERNAME='youruser'
 export JIRA_PASSWORD='jirapass'
+# Optional, default value:
+export JIRA_URL='https://carburetor.atlassian.net'
 ```
 
 Then you can run:
 
 ```bash
-jiralo project user from_date to_date
+jiralo project user [from_date] [to_date]
 ```
+
+By default from date and to date are respectively begin and end of current week
 
 ## Development
 

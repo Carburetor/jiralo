@@ -4,4 +4,3 @@ IFS=$'\n\t'
 set -x
 
 bundle install
-gem install "concurrent-ruby-ext" || true

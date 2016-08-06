@@ -1,6 +1,7 @@
 require "jiralo/jira"
 require "jiralo/jira/worklog"
 require "json"
+require "active_support/core_ext/object/blank"
 
 class Jiralo::Jira::Issue
   attr_accessor :id
@@ -17,9 +18,9 @@ class Jiralo::Jira::Issue
   end
 
   def worklogs_for_user(user_or_email)
-    worklogs.select do |worklog|
-      worklog.for_user?(user_or_email.to_s)
-    end
+    return [] if user_or_email.to_s.blank?
+
+    worklogs.select { |worklog| worklog.for_user?(user_or_email.to_s) }
   end
 
   def worklogs
@@ -36,11 +37,11 @@ class Jiralo::Jira::Issue
   private
 
   def issue_url
-    "https://carburetor.atlassian.net/rest/api/#{ api_version }/issue/#{ id }"
+    "#{ base_url }/rest/api/#{ api_version }/issue/#{ id }"
   end
 
   def download_worklogs
-    Jira
+    ::Jiralo::Jira
       .http_authenticated
       .get(
         issue_url,
@@ -51,6 +52,10 @@ class Jiralo::Jira::Issue
   end
 
   def api_version
-    Jira.api_version
+    ::Jiralo::Jira.api_version
+  end
+
+  def base_url
+    ::Jiralo::Jira.base_url
   end
 end

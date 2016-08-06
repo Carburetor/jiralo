@@ -1,10 +1,23 @@
+# https://carburetor.atlassian.net/rest/api/2/search?startIndex=0&jql=created+%3C+2016-08-06+and+updated+%3E+2016-08-01+and+timespent+%3E+0&fields=id,key,parent,summary&maxResults=1000
+# https://carburetor.atlassian.net/rest/api/2/issue/19180?fields=worklog,components
 require "jiralo/jira"
 require "jiralo/jira/issue"
 require "json"
 require "active_support/core_ext/string/filters"
+require "csv"
+require "active_support/core_ext/date/calculations"
 
 module Jiralo
   class Report
+    COLUMNS = [
+      "Started At",
+      "Ticket",
+      "Title",
+      "Time spent",
+      "Log description",
+      "Ticket details"
+    ].freeze
+
     attr_reader :params
 
     def initialize(params)
@@ -12,13 +25,19 @@ module Jiralo
     end
 
     def write(path)
+      CSV.open(path.to_s, "wb") do |csv|
+        csv << COLUMNS
+        worklogs.each { |worklog| csv << worklog.to_csv }
+      end
     end
 
     def worklogs
       issues
         .lazy
         .flat_map { |issue| issue.worklogs_for_user(params.user) }
-        .sort     { |worklog, other| worklog.started_at <=> other.started_at }
+        .reject   { |log| log.started_at.beginning_of_day < params.from }
+        .reject   { |log| log.started_at.end_of_day > params.to }
+        .sort     { |log, other| log.started_at <=> other.started_at }
     end
 
     def issues
@@ -34,7 +53,7 @@ module Jiralo
       Jira
         .http_authenticated
         .get(
-          "https://carburetor.atlassian.net/rest/api/#{ api_version }/search",
+          "#{ base_url }/rest/api/#{ api_version }/search",
           params: {
             "startIndex" => "0",
             "fields"     => "id,key,parent,summary",
@@ -55,6 +74,10 @@ module Jiralo
 
     def api_version
       Jira.api_version
+    end
+
+    def base_url
+      Jira.base_url
     end
   end
 end

@@ -3,6 +3,7 @@ require "jiralo/report_params"
 require "jiralo/report"
 require "pathname"
 require "fileutils"
+require "active_support/core_ext/date/calculations"
 
 module Jiralo
   class CLI
@@ -41,7 +42,8 @@ module Jiralo
 
     def parser
       parser = OptionParser.new do |opts|
-        opts.banner = "Usage: jiralo [options] PROJECT USER FROM_DATE TO_DATE"
+        desc = "Usage: jiralo [options] PROJECT USER [FROM_DATE] [TO_DATE]"
+        opts.banner = desc
         opts.on("-h", "--help", "Prints this help") { help }
       end
     end
@@ -55,8 +57,10 @@ module Jiralo
     end
 
     def evaluate_params(hash)
-      hash[:from] = Date.parse(hash[:from]) if hash[:from]
-      hash[:to]   = Date.parse(hash[:to])   if hash[:to]
+      hash[:from] ||= Date.today.beginning_of_week.to_s
+      hash[:to]   ||= Date.today.end_of_week.to_s
+      hash[:from]   = Date.parse(hash[:from])
+      hash[:to]     = Date.parse(hash[:to])
       hash
     end
   end
