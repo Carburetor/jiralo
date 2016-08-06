@@ -12,14 +12,14 @@ module Jiralo
     def write(path)
     end
 
-    private
-
     def issues
       json = JSON.parse(download_issues.to_s)
       json["issues"].map do |issue|
         Jira::Issue.new(issue)
       end
     end
+
+    private
 
     def download_issues
       Jira
@@ -28,7 +28,7 @@ module Jiralo
           "https://carburetor.atlassian.net/rest/api/#{ api_version }/search",
           params: {
             "startIndex" => "0",
-            "fields"     => "key,parent,summary",
+            "fields"     => "id,key,parent,summary",
             "maxResults" => "1000",
             "jql"        => jql_query
           }
