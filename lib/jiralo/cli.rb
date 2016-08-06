@@ -8,6 +8,8 @@ module Jiralo
     attr_accessor :params
 
     def initialize(args)
+      @options = {}
+      @params  = {}
       parse_options(args)
     end
 
@@ -24,9 +26,9 @@ module Jiralo
     private
 
     def parse_options(args)
-      args     = args.dup
-      @options = parser.parse(args)
-      @params  = extract_params(args)
+      args = args.dup
+      parser.parse!(args)
+      @params = extract_params(args)
     end
 
     def parser
