@@ -2,6 +2,3 @@
 
 require "bundler/setup"
 require "jiralo"
-require "pry-byebug"
-
-Pry.start
