@@ -2,7 +2,6 @@ require "jiralo/jira"
 require "jiralo/jira/worklog"
 require "json"
 require "active_support/core_ext/object/blank"
-require "thread/future"
 
 class Jiralo::Jira::Issue
   attr_accessor :id
