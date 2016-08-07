@@ -33,8 +33,9 @@ module Jiralo
 
     def worklogs
       issues
+        .map { |issue| issue.parallel_worklogs(params.user) }
         .lazy
-        .flat_map { |issue| issue.worklogs_for_user(params.user) }
+        .flat_map { |log| ~log }
         .reject   { |log| log.started_at.beginning_of_day < params.from }
         .reject   { |log| log.started_at.end_of_day > params.to }
         .sort     { |log, other| log.started_at <=> other.started_at }

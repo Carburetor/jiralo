@@ -2,6 +2,7 @@ require "jiralo/jira"
 require "jiralo/jira/worklog"
 require "json"
 require "active_support/core_ext/object/blank"
+require "thread/future"
 
 class Jiralo::Jira::Issue
   attr_accessor :id
@@ -15,6 +16,10 @@ class Jiralo::Jira::Issue
     @key     = json["key"].to_s
     @summary = fields["summary"].to_s
     @parent  = self.class.new(fields["parent"]) if fields["parent"]
+  end
+
+  def parallel_worklogs(user_or_email)
+    Thread.future { worklogs_for_user(user_or_email) }
   end
 
   def worklogs_for_user(user_or_email)
