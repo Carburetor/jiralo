@@ -66,7 +66,6 @@ module Jiralo
     def jql_query
       str = <<-EOS
         updated >= #{ params.from } and
-        updated <= #{ params.to } and
         timespent > 0
       EOS
       str.squish
