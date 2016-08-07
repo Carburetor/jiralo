@@ -6,6 +6,7 @@ require "json"
 require "active_support/core_ext/string/filters"
 require "csv"
 require "active_support/core_ext/date/calculations"
+require "thread/future"
 
 module Jiralo
   class Report
@@ -33,7 +34,7 @@ module Jiralo
 
     def worklogs
       issues
-        .map { |issue| issue.parallel_worklogs(params.user) }
+        .map { |issue| Thread.future { worklogs_for(issue) } }
         .lazy
         .flat_map { |log| ~log }
         .reject   { |log| log.started_at.beginning_of_day < params.from }
@@ -70,6 +71,10 @@ module Jiralo
         timespent > 0
       EOS
       str.squish
+    end
+
+    def worklogs_for(issue)
+      issue.worklogs_for_user(params.user.to_s)
     end
 
     def api_version

@@ -18,10 +18,6 @@ class Jiralo::Jira::Issue
     @parent  = self.class.new(fields["parent"]) if fields["parent"]
   end
 
-  def parallel_worklogs(user_or_email)
-    Thread.future { worklogs_for_user(user_or_email) }
-  end
-
   def worklogs_for_user(user_or_email)
     return [] if user_or_email.to_s.blank?
 
