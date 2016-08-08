@@ -32,13 +32,17 @@ class Jiralo::Jira::Worklog
 
   def to_csv
     [
-      started_at.to_s,
+      started_at_humanized,
       root_issue_key,
       root_issue_summary,
       time_spent_humanized,
       comment,
       child_issue_summary.to_s
     ]
+  end
+
+  def started_at_humanized
+    started_at.strftime("%Y-%m-%d %H-%M")
   end
 
   def author
