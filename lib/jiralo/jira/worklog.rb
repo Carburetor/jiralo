@@ -42,7 +42,7 @@ class Jiralo::Jira::Worklog
   end
 
   def started_at_humanized
-    started_at.strftime("%Y-%m-%d %H-%M")
+    started_at.strftime("%Y-%m-%d %H:%M")
   end
 
   def author
