@@ -11,3 +11,4 @@
 .ruby-version
 /binstubs/
 worklog_report.csv
+.~lock*
